@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Bumper Words — PSAT Vocabulary</title>
+<style>
+:root{
+  --bg:#14161b;
+  --surface:#1b1e25;
+  --surface-hi:#222630;
+  --line:#2c313b;
+  --text:#e6e4df;
+  --muted:#8f95a1;
+  --accent:#a9b3f0;
+  --accent-bg:rgba(169,179,240,.11);
+  --good:#86c29f;
+  --good-bg:rgba(134,194,159,.10);
+  --bad:#e58f8a;
+  --bad-bg:rgba(229,143,138,.10);
+  --serif:Georgia,"Times New Roman",serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --radius:6px;
+}
+*{box-sizing:border-box}
+html{color-scheme:dark}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+header{padding:56px 0 32px}
+h1{margin:0;font:400 clamp(40px,6vw,60px)/1.05 var(--serif);letter-spacing:-.02em}
+.intro{max-width:52ch;margin:14px 0 0;color:var(--muted);font-size:16px}
+.sub{margin:6px 0 0;color:var(--muted);font-size:14px}
+
+.toolbar{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;justify-content:space-between;padding:14px 0 18px;border-top:1px solid var(--line)}
+.toolbar-left{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px}
+.toolbar p{margin:0;color:var(--muted);font-size:14px}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+
+button{font:500 13px/1 var(--sans);color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:9px 14px;cursor:pointer;transition:border-color .15s,background-color .15s,color .15s}
+button:hover:not(:disabled){background:var(--surface-hi);border-color:#3d4350}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.primary{background:var(--accent-bg);border-color:rgba(169,179,240,.4);color:var(--accent)}
+button.primary:hover:not(:disabled){background:rgba(169,179,240,.18);border-color:var(--accent)}
+
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.seg button{border:0;border-radius:0;background:transparent;color:var(--muted);padding:9px 16px}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--accent-bg);color:var(--accent)}
+.seg button:focus-visible{outline-offset:-2px}
+
+[data-mode="study"] .quiz-only,[data-mode="quiz"] .study-only,[hidden]{display:none!important}
+
+.result{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px;margin:0 0 16px;padding:20px 22px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+.result-score{font:400 40px/1 var(--serif);letter-spacing:-.02em}
+.result-score span{color:var(--muted);font-size:24px}
+.result-detail{margin:6px 0 0;color:var(--muted);font-size:14px}
+
+.groups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;padding-bottom:40px}
+.group{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 20px 16px}
+.group.correct{border-color:rgba(134,194,159,.5)}
+.group.wrong{border-color:rgba(229,143,138,.5)}
+.meta{display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:13px}
+h2{margin:6px 0 14px;font:400 22px/1.2 var(--serif);letter-spacing:-.01em}
+
+ul{list-style:none;margin:0 0 18px;padding:0;display:grid;gap:2px}
+li{margin:0 -8px;padding:4px 8px;border-radius:4px;font-size:15px;transition:background-color .2s,color .2s}
+.group.revealed li.is-bumper{background:var(--accent-bg);color:var(--accent)}
+.group.graded.correct li.is-bumper{background:var(--good-bg);color:var(--good)}
+.group.graded.wrong li.is-bumper{background:var(--bad-bg);color:var(--bad)}
+
+.foot{margin-top:auto;padding-top:14px;border-top:1px solid var(--line)}
+.study-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:33px}
+.answer{font-size:14px;color:var(--muted)}
+.answer-word{font:400 18px/1.2 var(--serif);color:var(--accent)}
+.group:not(.revealed) .answer-word{display:none}
+.group.revealed .answer-hidden{display:none}
+.reveal{padding:7px 12px;font-size:12px}
+.group.revealed .reveal{color:var(--muted)}
+
+.answer-input{width:100%;padding:8px 12px;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:var(--radius);font:15px/1.4 var(--sans)}
+.answer-input::placeholder{color:#656b77}
+.answer-input:focus-visible{outline:none;border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.answer-input:read-only{color:var(--muted)}
+.group.correct .answer-input{border-color:rgba(134,194,159,.5)}
+.group.wrong .answer-input{border-color:rgba(229,143,138,.5)}
+.feedback{margin:8px 0 0;font-size:13px;color:var(--muted)}
+.feedback b{font-weight:600}
+.group.correct .feedback b{color:var(--good)}
+.group.wrong .feedback b{color:var(--bad)}
+.feedback em{font:400 15px var(--serif);font-style:normal;color:var(--text)}
+
+.note{margin:0 0 48px;padding:14px 16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);color:var(--muted);font-size:13px}
+.note strong{color:var(--text);font-weight:600}
+
+footer{border-top:1px solid var(--line);padding:20px 0 32px;color:var(--muted);font-size:13px}
+
+@media(max-width:850px){.groups{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.wrap{padding:0 18px}header{padding-top:40px}.groups{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body data-mode="study">
+<header><div class="wrap">
+  <h1>Bumper words</h1>
+  <p class="intro" id="intro"></p>
+  <p class="sub">PSAT challenging words, lists 1–4</p>
+</div></header>
+
+<main class="wrap">
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <div class="seg" role="group" aria-label="Mode">
+        <button type="button" id="modeStudy" aria-pressed="true">Study</button>
+        <button type="button" id="modeQuiz" aria-pressed="false">Quiz</button>
+      </div>
+      <p id="status" aria-live="polite"></p>
+    </div>
+    <div class="actions">
+      <button type="button" id="toggleAll" class="study-only">Reveal all</button>
+      <button type="button" id="copyBtn" class="study-only">Copy all text</button>
+      <button type="button" id="submitBtn" class="quiz-only primary" disabled>Submit answers</button>
+    </div>
+  </div>
+
+  <div class="result quiz-only" id="result" role="status" hidden>
+    <div>
+      <div class="result-score" id="score"></div>
+      <p class="result-detail" id="scoreDetail"></p>
+    </div>
+    <button type="button" id="retryBtn">Try again</button>
+  </div>
+
+  <section class="groups" id="groups" aria-label="Vocabulary groups"></section>
+  <p class="note"><strong>Working draft.</strong> Check every group against your assignment before submitting. This is a study layout, not a verified answer key.</p>
+</main>
+<footer><div class="wrap">Vocabulary study sheet, personal classwork</div></footer>
+
+<script>
+const groups=[
+{title:"Diligence & Care",words:["assiduous","scrupulous","pedantic","meritorious"],bumper:"pedantic"},
+{title:"Criticism & Disapproval",words:["censure","rebuke","execrate","sardonic"],bumper:"sardonic"},
+{title:"Emotional Distress",words:["chagrin","discomfit","poignant","ignominy"],bumper:"ignominy"},
+{title:"Deception & Dishonesty",words:["artifice","feign","perfidy","equivocal"],bumper:"equivocal"},
+{title:"Authority & Power",words:["potentate","conscript","capitulate","plebeian"],bumper:"plebeian"},
+{title:"Pleading & Persistence",words:["supplicate","importune","beleaguer","obsequious"],bumper:"obsequious"},
+{title:"Speech & Expression",words:["rhetoric","vernacular","promulgate","evince","candor"],bumper:"candor"},
+{title:"Religious & Ritual Words",words:["anathema","incantation","expiate","inoculate"],bumper:"inoculate"},
+{title:"Character & Temperament",words:["affable","sanguine","craven","capricious"],bumper:"capricious"},
+{title:"Harm & Threats",words:["pernicious","inexorable","portent","vestige"],bumper:"portent"},
+{title:"Value & Quality",words:["meritorious","sublime","tenable","paltry","facile"],bumper:"tenable"},
+{title:"Beauty & Description",words:["florid","ethereal","ineffable","piquant","verdant"],bumper:"verdant"},
+{title:"Excess & Greed",words:["avarice","profligate","paltry","indolent"],bumper:"profligate"},
+{title:"Signs & Unusual Things",words:["anomaly","auspices","vestige","evince"],bumper:"anomaly"},
+{title:"Effort & Attitude",words:["indolent","prosaic","sardonic","piquant"],bumper:"prosaic"}
+];
+
+const container=document.getElementById("groups");
+container.innerHTML=groups.map((g,i)=>`
+<article class="group" id="group-${i+1}">
+  <div class="meta"><span>Group ${i+1}</span><span>${g.words.length} words</span></div>
+  <h2>${g.title}</h2>
+  <ul>${g.words.map(w=>`<li${w===g.bumper?' class="is-bumper"':''}>${w}</li>`).join("")}</ul>
+  <div class="foot">
+    <div class="study-foot study-only">
+      <div class="answer" aria-live="polite">
+        <span class="answer-hidden">Bumper word hidden</span>
+        <span class="answer-word">${g.bumper}</span>
+      </div>
+      <button class="reveal" type="button" aria-pressed="false" aria-label="Reveal bumper word for group ${i+1}">Reveal</button>
+    </div>
+    <div class="quiz-foot quiz-only">
+      <input class="answer-input" type="text" placeholder="Type the bumper word" aria-label="Bumper word for group ${i+1}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+      <p class="feedback" hidden></p>
+    </div>
+  </div>
+</article>`).join("");
+
+const cards=[...container.querySelectorAll(".group")];
+const inputs=cards.map(c=>c.querySelector(".answer-input"));
+const $=id=>document.getElementById(id);
+const body=document.body;
+const statusEl=$("status"),submitBtn=$("submitBtn"),resultEl=$("result"),toggleAllBtn=$("toggleAll");
+let mode="study",submitted=false;
+
+const intros={
+  study:"Each group below has one word that doesn't belong. Find it, then reveal the answer to check.",
+  quiz:"Type the word that doesn't belong in each group. When every group is filled in, submit to see your score."
+};
+
+/* ---------- status ---------- */
+function answeredCount(){return inputs.filter(i=>i.value.trim()!=="").length}
+function updateStatus(){
+  if(mode==="study"){statusEl.textContent=groups.length+" groups";}
+  else if(submitted){statusEl.textContent="Submitted";}
+  else{statusEl.textContent=answeredCount()+" of "+groups.length+" answered";}
+  submitBtn.disabled=submitted||answeredCount()<groups.length;
+}
+
+/* ---------- mode ---------- */
+function setMode(m){
+  mode=m;
+  body.dataset.mode=m;
+  $("modeStudy").setAttribute("aria-pressed",m==="study");
+  $("modeQuiz").setAttribute("aria-pressed",m==="quiz");
+  $("intro").textContent=intros[m];
+  if(m==="quiz"){cards.forEach(c=>setRevealed(c,false));syncToggleAll();}
+  updateStatus();
+}
+$("modeStudy").addEventListener("click",()=>setMode("study"));
+$("modeQuiz").addEventListener("click",()=>setMode("quiz"));
+
+/* ---------- study: reveal ---------- */
+function setRevealed(card,on){
+  card.classList.toggle("revealed",on);
+  const btn=card.querySelector(".reveal");
+  const n=card.id.replace("group-","");
+  btn.setAttribute("aria-pressed",on);
+  btn.textContent=on?"Hide":"Reveal";
+  btn.setAttribute("aria-label",(on?"Hide":"Reveal")+" bumper word for group "+n);
+}
+function syncToggleAll(){
+  toggleAllBtn.textContent=cards.every(c=>c.classList.contains("revealed"))?"Hide all":"Reveal all";
+}
+cards.forEach(card=>{
+  card.querySelector(".reveal").addEventListener("click",()=>{
+    setRevealed(card,!card.classList.contains("revealed"));
+    syncToggleAll();
+  });
+});
+toggleAllBtn.addEventListener("click",()=>{
+  const reveal=!cards.every(c=>c.classList.contains("revealed"));
+  cards.forEach(c=>setRevealed(c,reveal));
+  syncToggleAll();
+});
+
+/* ---------- study: copy ---------- */
+const copyBtn=$("copyBtn");
+function flash(msg){
+  const old=copyBtn.textContent;
+  copyBtn.textContent=msg;
+  setTimeout(()=>{copyBtn.textContent=old},1600);
+}
+copyBtn.addEventListener("click",async()=>{
+  const text=groups.map((g,i)=>`Group ${i+1}: ${g.title}\n${g.words.join("\n")}\nBumper: ${g.bumper}`).join("\n\n");
+  try{
+    await navigator.clipboard.writeText(text);
+    flash("Copied");
+  }catch(e){
+    const ta=document.createElement("textarea");
+    ta.value=text;ta.style.position="fixed";ta.style.opacity="0";
+    document.body.appendChild(ta);ta.select();
+    try{document.execCommand("copy");flash("Copied")}catch(_){flash("Copy failed")}
+    ta.remove();
+  }
+});
+
+/* ---------- quiz ---------- */
+const norm=s=>s.trim().toLowerCase();
+
+inputs.forEach((inp,i)=>{
+  inp.addEventListener("input",updateStatus);
+  inp.addEventListener("keydown",e=>{
+    if(e.key!=="Enter")return;
+    e.preventDefault();
+    if(i<inputs.length-1)inputs[i+1].focus();
+    else if(!submitBtn.disabled)submitBtn.click();
+  });
+});
+
+submitBtn.addEventListener("click",()=>{
+  if(submitBtn.disabled)return;
+  submitted=true;
+  let score=0;
+  cards.forEach((card,i)=>{
+    const g=groups[i],inp=inputs[i],fb=card.querySelector(".feedback");
+    const ok=norm(inp.value)===g.bumper;
+    if(ok)score++;
+    card.classList.add("graded",ok?"correct":"wrong");
+    inp.readOnly=true;
+    fb.hidden=false;
+    fb.innerHTML=ok?"<b>Correct</b>":"<b>Incorrect.</b> The bumper word is <em>"+g.bumper+"</em>.";
+  });
+  const pct=Math.round(score/groups.length*100);
+  $("score").innerHTML=score+' <span>/ '+groups.length+'</span>';
+  $("scoreDetail").textContent=pct+"% correct. Groups you missed are marked below.";
+  resultEl.hidden=false;
+  updateStatus();
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+
+$("retryBtn").addEventListener("click",()=>{
+  submitted=false;
+  cards.forEach((card,i)=>{
+    card.classList.remove("graded","correct","wrong");
+    inputs[i].value="";
+    inputs[i].readOnly=false;
+    const fb=card.querySelector(".feedback");
+    fb.hidden=true;fb.textContent="";
+  });
+  resultEl.hidden=true;
+  updateStatus();
+  inputs[0].focus();
+});
+
+setMode("study");
+</script></body></html>
