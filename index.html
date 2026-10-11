@@ -71,8 +71,9 @@ li{margin:0 -8px;padding:4px 8px;border-radius:4px;font-size:15px;transition:bac
 .foot{margin-top:auto;padding-top:14px;border-top:1px solid var(--line)}
 .study-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:33px}
 .answer{font-size:14px;color:var(--muted)}
-.answer-word{font:400 18px/1.2 var(--serif);color:var(--accent)}
-.group:not(.revealed) .answer-word{display:none}
+.answer-word{display:block;font:400 18px/1.2 var(--serif);color:var(--accent)}
+.answer-dest{display:block;margin-top:3px;font-size:13px;color:var(--muted)}
+.group:not(.revealed) .answer-word,.group:not(.revealed) .answer-dest{display:none}
 .group.revealed .answer-hidden{display:none}
 .reveal{padding:7px 12px;font-size:12px}
 .group.revealed .reveal{color:var(--muted)}
@@ -129,7 +130,7 @@ footer{border-top:1px solid var(--line);padding:20px 0 32px;color:var(--muted);f
   </div>
 
   <section class="groups" id="groups" aria-label="Vocabulary groups"></section>
-  <p class="note"><strong>Working draft.</strong> Check every group against your assignment before submitting. This is a study layout, not a verified answer key.</p>
+  <!-- <p class="note"><strong>Working draft.</strong> Check every group against your assignment before submitting. This is a study layout, not a verified answer key.</p> -->
 </main>
 <footer><div class="wrap">Vocabulary study sheet, personal classwork</div></footer>
 
@@ -152,8 +153,11 @@ const groups=[
 {title:"Effort & Attitude",words:["indolent","prosaic","sardonic","piquant"],bumper:"prosaic"}
 ];
 
+/* the bumper word moves to the next group; the last group wraps back to group 1 */
+const dest=i=>{const j=(i+1)%groups.length;return{n:j+1,title:groups[j].title}};
+
 const container=document.getElementById("groups");
-container.innerHTML=groups.map((g,i)=>`
+container.innerHTML=groups.map((g,i)=>{const d=dest(i);return `
 <article class="group" id="group-${i+1}">
   <div class="meta"><span>Group ${i+1}</span><span>${g.words.length} words</span></div>
   <h2>${g.title}</h2>
@@ -163,15 +167,16 @@ container.innerHTML=groups.map((g,i)=>`
       <div class="answer" aria-live="polite">
         <span class="answer-hidden">Bumper word hidden</span>
         <span class="answer-word">${g.bumper}</span>
+        <span class="answer-dest">Moves to group ${d.n}, ${d.title}</span>
       </div>
       <button class="reveal" type="button" aria-pressed="false" aria-label="Reveal bumper word for group ${i+1}">Reveal</button>
     </div>
     <div class="quiz-foot quiz-only">
-      <input class="answer-input" type="text" placeholder="Type the bumper word" aria-label="Bumper word for group ${i+1}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+      <input class="answer-input" type="text" placeholder="Word to bump" aria-label="Word to bump from group ${i+1} to group ${d.n}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
       <p class="feedback" hidden></p>
     </div>
   </div>
-</article>`).join("");
+</article>`}).join("");
 
 const cards=[...container.querySelectorAll(".group")];
 const inputs=cards.map(c=>c.querySelector(".answer-input"));
@@ -181,8 +186,8 @@ const statusEl=$("status"),submitBtn=$("submitBtn"),resultEl=$("result"),toggleA
 let mode="study",submitted=false;
 
 const intros={
-  study:"Each group below has one word that doesn't belong. Find it, then reveal the answer to check.",
-  quiz:"Type the word that doesn't belong in each group. When every group is filled in, submit to see your score."
+  study:"In each group, one word fits better in the next group. Find it, then reveal it to see where it moves.",
+  quiz:"Type the word in each group that should be bumped to the next group. When every group is filled in, submit to see your score."
 };
 
 /* ---------- status ---------- */
@@ -239,7 +244,7 @@ function flash(msg){
   setTimeout(()=>{copyBtn.textContent=old},1600);
 }
 copyBtn.addEventListener("click",async()=>{
-  const text=groups.map((g,i)=>`Group ${i+1}: ${g.title}\n${g.words.join("\n")}\nBumper: ${g.bumper}`).join("\n\n");
+  const text=groups.map((g,i)=>`Group ${i+1}: ${g.title}\n${g.words.join("\n")}\nBumper (moves to group ${dest(i).n}): ${g.bumper}`).join("\n\n");
   try{
     await navigator.clipboard.writeText(text);
     flash("Copied");
@@ -276,7 +281,8 @@ submitBtn.addEventListener("click",()=>{
     card.classList.add("graded",ok?"correct":"wrong");
     inp.readOnly=true;
     fb.hidden=false;
-    fb.innerHTML=ok?"<b>Correct</b>":"<b>Incorrect.</b> The bumper word is <em>"+g.bumper+"</em>.";
+    const d=dest(i);
+    fb.innerHTML=ok?"<b>Correct.</b> Moves to group "+d.n+".":"<b>Incorrect.</b> The word is <em>"+g.bumper+"</em>, which moves to group "+d.n+".";
   });
   const pct=Math.round(score/groups.length*100);
   $("score").innerHTML=score+' <span>/ '+groups.length+'</span>';
